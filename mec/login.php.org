@@ -1,0 +1,176 @@
+<?php
+require('../../config.php');
+
+$cid = optional_param('cid', 0, PARAM_INT);
+
+if ($cid == 1) {
+  $bgimg = 'bkg_1.jpg';	
+} else if ($cid == 2) {
+  $bgimg = 'bkg_2.jpg';	
+} else {
+  $bgimg = 'bkg.jpg';
+}
+//require('/moodle_root/public/config.php');
+require_once($CFG->libdir . '/authlib.php');
+$authsequence = get_enabled_auth_plugins(true);
+$identityproviders = \auth_plugin_base::get_identity_providers($authsequence);
+foreach($identityproviders as $identityprovider){
+    if ($identityprovider['name'] == 'Clever'){
+        $cleverurl = $identityprovider['url'];
+        $clevericonurl = $identityprovider['iconurl'];
+    } elseif ($identityprovider['name'] == 'Microsoft') {
+        $microsofturl = $identityprovider['url'];
+        $microsofticonurl = $identityprovider['iconurl'];
+    } elseif ($identityprovider['name'] == 'Google') {
+        $googleurl = $identityprovider['url'];
+        $googleiconurl = $identityprovider['iconurl'];
+
+    } elseif ($identityprovider['name'] == 'ClassLink OAuth2') {
+        //add an icon for classlink
+        if (!empty($identityprovider['icon'])) {
+            // Pre-3.3 auth plugins provide icon as a pix_icon instance. New auth plugins (since 3.3) provide iconurl.
+            $identityprovider['iconurl'] = $OUTPUT->image_url($identityprovider['icon']->pix, $identityprovider['icon']->component);
+        }
+        if ($identityprovider['iconurl'] instanceof moodle_url) {
+            $identityprovider['iconurl'] = $identityprovider['iconurl']->out(false);
+        }
+        unset($identityprovider['icon']);
+        if ($identityprovider['url'] instanceof moodle_url) {
+            $identityprovider['url'] = $identityprovider['url']->out(false);
+        }
+        $classlinkurl = $identityprovider['url'];
+        $classlinkiconurl = $identityprovider['iconurl'];
+    }
+}
+
+
+
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Moodle Login</title>
+<style type="text/css">
+body{
+	font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+}
+#bg{
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	display:block; /*!*/
+	position:absolute;
+	z-index:1;
+}
+p, h1, form, button{
+	border:0;
+	margin:0;
+	padding:0;
+}
+.spacer{clear:both; height:1px;}
+/* ----------- My Form ----------- */
+.myform{
+	margin:0 auto;
+	width:400px;
+	padding:14px;
+	position: absolute;
+	left: 88px;
+	top: 67px;
+	z-index:5;
+}
+
+/* ----------- stylized ----------- */
+#stylized{
+	border:7px solid #666;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	background-color: #ebf4fb;
+}
+#stylized h1 {
+font-size:16px;
+font-weight:bold;
+margin-bottom:8px;
+}
+#stylized p{
+font-size:11px;
+color:#666666;
+margin-bottom:20px;
+border-bottom:solid 1px #b7ddf2;
+padding-bottom:10px;
+}
+#stylized label{
+display:block;
+font-weight:bold;
+text-align:right;
+width:140px;
+float:left;
+}
+#stylized .small{
+color:#666666;
+display:block;
+font-size:11px;
+font-weight:normal;
+text-align:right;
+width:140px;
+}
+#stylized input{
+float:left;
+font-size:12px;
+padding:4px 2px;
+border:solid 1px #aacfe4;
+width:200px;
+margin:2px 0 20px 10px;
+}
+#stylized button{
+clear:both;
+margin-left:150px;
+width:150px;
+height:35px;
+background:url(button.png) no-repeat;
+text-align:center;
+line-height:31px;
+color:#FFFFFF;
+font-size:11px;
+font-weight:bold;
+}
+
+#dps {
+	position: absolute;
+	z-index: 5;
+	left: 5px;
+	top: 32px;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 5px;
+}
+</style>
+</head>
+
+<body>
+<img id="bg" src="<?php echo $bgimg ?>" />
+<div id="dps">Choo Smith Youth Empowerment - CommuniVersity</div>
+
+<div id="stylized" class="myform">
+  <img src="logo.png" width="247" height="78" alt="iLearn 2.0" />
+  <form id="form" name="form" method="post" action="https://dev3-moodle41-node1.mec-edu.net/login/index.php">
+
+
+<label>UserName
+<span class="small">Enter your Username</span>
+</label>
+<input type="text" name="username" id="name" />
+
+<label>Password
+<span class="small">Enter Your Password</span>
+</label>
+<input type="password" name="password" id="password" />
+
+<button type="submit">Login</button>
+<div class="spacer"></div>
+
+</form>
+</div>
+</body>
+</html>
